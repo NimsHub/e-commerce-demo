@@ -1,7 +1,6 @@
 package com.nimshub.softwarearchitecturedemo.user;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.SecondaryRow;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
