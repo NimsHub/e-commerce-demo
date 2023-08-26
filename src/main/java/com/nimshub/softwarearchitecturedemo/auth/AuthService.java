@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -84,7 +86,7 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
+             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
@@ -92,10 +94,7 @@ public class AuthService {
         );
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        return LoginResponse.builder()
-                .accessToken(jwtToken)
-                .build();
+        return mapUserToLoginResponse(user);
     }
 
     public String generateVerificationCode() {
@@ -105,5 +104,29 @@ public class AuthService {
 
         int verifyCode = (random.nextInt(maxCodeValue - minCodeValue + 1) + minCodeValue);
         return String.valueOf(verifyCode);
+    }
+
+    public LoginResponse verifyEmail(VerifyUserRequest request) {
+        User user = userRepository.findByEmail(request.getUserEmail()).orElseThrow(() -> new UsernameNotFoundException(
+                "Incorrect Email or User with E-mail - %s does not exist".formatted(request.getUserEmail())));
+
+        // Compare the provided verification code with the stored code or the default code (for testing)
+        if(user.getVerificationCode().equals(request.getVerificationCode())
+                || request.getVerificationCode().equals("123456")){
+            user.setVerificationCode(null);
+            user.setEnabled(true);
+            userRepository.save(user);
+            return mapUserToLoginResponse(user);
+        }else{
+            // Incorrect verification code
+            throw new BadCredentialsException("Incorrect verification code");
+        }
+    }
+
+    public LoginResponse mapUserToLoginResponse(User user){
+        var jwtToken = jwtService.generateToken(user);
+        return LoginResponse.builder()
+                .accessToken(jwtToken)
+                .build();
     }
 }
