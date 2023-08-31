@@ -1,9 +1,10 @@
 package com.nimshub.softwarearchitecturedemo.product;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.UUID;
 
 @Entity
 @Data
@@ -12,8 +13,14 @@ import lombok.*;
 @AllArgsConstructor
 public class Product {
     @Id
-    @GeneratedValue
-    private Long id;
+    @SequenceGenerator(name = "PRODUCT_SEQ", sequenceName = "PRODUCT_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PRODUCT_SEQ")
+    private Integer id;
+    @NotNull
+    private UUID productId;
     private String name;
     private String price;
+    private boolean isAvailable;
+    private String description;
+    private String image;
 }

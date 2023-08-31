@@ -1,18 +1,10 @@
 package com.nimshub.softwarearchitecturedemo.product;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.nimshub.softwarearchitecturedemo.product.dto.ProductRequest;
 
-@RequiredArgsConstructor
-@Service
-public class ProductService {
+import java.util.UUID;
 
-    private final ProductRepository productRepository;
-    public Product getProduct(Long id){
-        return productRepository.findById(id).orElseThrow(()->
-                new RuntimeException("Product with id : [%s] not found".formatted(id)));
-    }
-    public void createProduct(Product product){
-        productRepository.save(product);
-    }
+public interface ProductService {
+    Product getProduct(UUID id);
+    void createProduct(ProductRequest productRequest);
 }

@@ -1,21 +1,24 @@
 package com.nimshub.softwarearchitecturedemo.product;
 
+import com.nimshub.softwarearchitecturedemo.product.dto.ProductRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductServiceImpl productServiceImpl;
 
     @GetMapping("/product")
-    public Product getProduct(@RequestParam Integer id) {
-        return productService.getProduct(id.longValue());
+    public Product getProduct(@RequestParam UUID id) {
+        return productServiceImpl.getProduct(id);
     }
 
     @PostMapping("/product")
-    public void createProduct(@RequestBody Product product){
-        productService.createProduct(product);
+    public void createProduct(@RequestBody ProductRequest productRequest){
+        productServiceImpl.createProduct(productRequest);
     }
 }
