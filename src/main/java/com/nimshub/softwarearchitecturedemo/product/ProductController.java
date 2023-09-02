@@ -2,23 +2,39 @@ package com.nimshub.softwarearchitecturedemo.product;
 
 import com.nimshub.softwarearchitecturedemo.product.dto.ProductRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final ProductServiceImpl productServiceImpl;
+    private final ProductServiceImpl productService;
 
-    @GetMapping("/product")
-    public Product getProduct(@RequestParam UUID id) {
-        return productServiceImpl.getProduct(id);
+    @GetMapping("/get/{id}")
+    public ResponseEntity<Product> getProduct(@PathVariable UUID id) {
+        Product product = productService.getProduct(id);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @PostMapping("/product")
-    public void createProduct(@RequestBody ProductRequest productRequest){
-        productServiceImpl.createProduct(productRequest);
+    @PostMapping("/create")
+    public ResponseEntity<String> createProduct(@RequestBody ProductRequest productRequest){
+        productService.createProduct(productRequest);
+        return new ResponseEntity<>("new product has been created", HttpStatus.CREATED);
+    }
+    @PutMapping("update/{id}")
+    public ResponseEntity<String> updateProduct(@RequestBody ProductRequest productRequest, @PathVariable UUID id){
+        productService.updateProduct(productRequest,id);
+        return new ResponseEntity<>("product has been updated",HttpStatus.OK);
+    }
+    @GetMapping("search")
+    public ResponseEntity<List<Product>> searchProduct(@RequestParam String searchTerm){
+        List<Product> searchedProducts = productService.searchProducts(searchTerm);
+        return new ResponseEntity<>(searchedProducts,HttpStatus.OK);
     }
 }

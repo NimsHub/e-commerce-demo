@@ -6,6 +6,10 @@ import lombok.*;
 
 import java.util.UUID;
 
+/**
+ * @Author Nirmala : 31:August:2023
+ * This entity class defines the all the properties of Product
+ */
 @Entity
 @Data
 @Builder

@@ -4,8 +4,12 @@ import com.nimshub.softwarearchitecturedemo.product.dto.ProductRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
-
+/**
+ * @Author Nirmala : 31:August:2023
+ * This service implements all methods required to handle the business logic of Product
+ */
 @RequiredArgsConstructor
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -39,5 +43,9 @@ public class ProductServiceImpl implements ProductService {
         product.setImage(productRequest.getImage());
 
         productRepository.save(product);
+    }
+
+    public List<Product> searchProducts(String searchTerm){
+        return productRepository.searchUsersByFirstNameOrLastName(searchTerm);
     }
 }
