@@ -41,4 +41,16 @@ public class ApplicationExceptionHandler {
                         .build(), HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException e, HttpServletRequest request) {
+        return new ResponseEntity<>(
+                ErrorResponse.builder()
+                        .status(HttpStatus.NOT_FOUND)
+                        .message(e.getMessage())
+                        .uri(request.getRequestURI())
+                        .trace(e.getStackTrace()[0])
+                        .timeStamp(ZonedDateTime.now(ZoneId.of("Z")))
+                        .build(), HttpStatus.NOT_FOUND
+        );
+    }
 }
