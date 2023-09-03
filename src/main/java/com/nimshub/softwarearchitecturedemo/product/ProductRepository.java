@@ -18,6 +18,8 @@ public interface ProductRepository extends JpaRepository<Product,Integer> {
     Optional<Product> findByProductId(UUID id);
     List<Product> findAll(Specification<Product> spec);
 
+    void deleteByProductId(UUID id);
+
     default List<Product> searchUsersByFirstNameOrLastName(String searchTerm) {
         return findAll((root, query, criteriaBuilder) -> {
             String likePattern = "%" + searchTerm + "%";
