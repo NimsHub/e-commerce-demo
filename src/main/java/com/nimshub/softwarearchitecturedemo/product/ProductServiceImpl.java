@@ -15,12 +15,12 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-
+    @Override
     public Product getProduct(UUID id) {
         return productRepository.findByProductId(id).orElseThrow(() ->
                 new RuntimeException("Product with id : [%s] not found".formatted(id)));
     }
-
+    @Override
     public void createProduct(ProductRequest productRequest) {
         Product product = Product.builder()
                 .productId(UUID.randomUUID())
@@ -31,11 +31,11 @@ public class ProductServiceImpl implements ProductService {
                 .build();
         productRepository.save(product);
     }
-
+    @Override
     public void deleteProduct(UUID id){
         productRepository.deleteByProductId(id);
     }
-
+    @Override
     public void updateProduct(ProductRequest productRequest, UUID productId) {
 
         Product product = getProduct(productId);
@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.save(product);
     }
-
+    @Override
     public List<Product> searchProducts(String searchTerm){
         return productRepository.searchUsersByFirstNameOrLastName(searchTerm);
     }

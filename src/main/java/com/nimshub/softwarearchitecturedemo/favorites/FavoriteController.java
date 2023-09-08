@@ -1,7 +1,5 @@
 package com.nimshub.softwarearchitecturedemo.favorites;
 
-import com.nimshub.softwarearchitecturedemo.cart.CartService;
-import com.nimshub.softwarearchitecturedemo.cart.CartUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
