@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,7 @@ public class AuthService {
             throw new UserAlreadyExistsException("User with email - %s already exists".formatted(request.getEmail()));
         }
         var user = User.builder()
+                .userId(UUID.randomUUID())
                 .firstName(request.getFirstname())
                 .lastName(request.getLastname())
                 .email(request.getEmail())
