@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,23 +34,27 @@ public class AuthService {
     Random random = new Random();
 
     public RegistrationResponse register(RegistrationRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new UserAlreadyExistsException("User with email - %s already exists".formatted(request.getEmail()));
+        if (userRepository.existsByEmail(request.getUserName())) {
+            throw new UserAlreadyExistsException("User with email - %s already exists".formatted(request.getUserName()));
         }
+        String token = UUID.randomUUID().toString();
+
         var user = User.builder()
                 .userId(UUID.randomUUID())
-                .firstName(request.getFirstname())
-                .lastName(request.getLastname())
-                .email(request.getEmail())
+                .firstName(request.getUserFirstName())
+                .lastName(request.getUserLastName())
+                .email(request.getUserName())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .verificationCode(generateVerificationCode())
+                .verificationCode(token)
                 .role(Role.USER)
                 .build();
         var registeredUser =userRepository.save(user);
 
         sendVerificationEmail(registeredUser);
         return RegistrationResponse.builder()
-                .message("Verification Email is Sent to Your Email")
+                .userFirstName(registeredUser.getFirstName())
+                .userLastName(registeredUser.getLastName())
+                .userName(registeredUser.getEmail())
                 .build();
     }
 
@@ -70,11 +73,12 @@ public class AuthService {
                 + "<br><br>"
                 + "Safe travels and best regards,<br>"
                 + "Ecommerce Team<br>";
-
+        String token = user.getVerificationCode();
+        String link = "http://localhost:4200/verification/"+token;
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
         content = content.replace("[[name]]", user.getFirstName());
-        content = content.replace("[[code]]", user.getVerificationCode());
+        content = content.replace("[[code]]", link);
 
         try {
             helper.setFrom(fromAddress, senderName);
@@ -90,39 +94,22 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
              authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
+                        request.getUserName(),
+                        request.getUserPassword()
                 )
         );
-        var user = userRepository.findByEmail(request.getEmail())
+        var user = userRepository.findByEmail(request.getUserName())
                 .orElseThrow();
         return mapUserToLoginResponse(user);
     }
 
-    public String generateVerificationCode() {
-        int codeLength = 6;
-        int minCodeValue = (int) Math.pow(10, codeLength - 1); // Minimum value with 6 digits
-        int maxCodeValue = (int) Math.pow(10, codeLength) - 1; // Maximum value with 6 digits
-
-        int verifyCode = (random.nextInt(maxCodeValue - minCodeValue + 1) + minCodeValue);
-        return String.valueOf(verifyCode);
-    }
-
-    public LoginResponse verifyEmail(VerifyUserRequest request) {
-        User user = userRepository.findByEmail(request.getUserEmail()).orElseThrow(() -> new UsernameNotFoundException(
-                "Incorrect Email or User with E-mail - %s does not exist".formatted(request.getUserEmail())));
-
-        // Compare the provided verification code with the stored code or the default code (for testing)
-        if(user.getVerificationCode().equals(request.getVerificationCode())
-                || request.getVerificationCode().equals("123456")){
-            user.setVerificationCode(null);
-            user.setEnabled(true);
-            userRepository.save(user);
-            return mapUserToLoginResponse(user);
-        }else{
-            // Incorrect verification code
-            throw new BadCredentialsException("Incorrect verification code");
-        }
+    public VerifyEmailResponse verifyEmail(String token) {
+        User user= userRepository.findByVerificationCode(token)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "Incorrect Verification Code or User with Verification Code - %s does not exist".formatted(token)));
+        user.setEnabled(true);
+        userRepository.save(user);
+        return new VerifyEmailResponse("Email Verified");
     }
 
     public LoginResponse mapUserToLoginResponse(User user){
@@ -138,7 +125,9 @@ public class AuthService {
                         "Incorrect Email or User with E-mail - %s does not exist".formatted(request.getUserEmail())));
         sendVerificationEmail(user);
         return RegistrationResponse.builder()
-                .message("Verification Email is Sent to Your Email")
+                .userFirstName(user.getFirstName())
+                .userLastName(user.getLastName())
+                .userName(user.getEmail())
                 .build();
     }
 }

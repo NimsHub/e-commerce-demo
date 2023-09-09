@@ -8,11 +8,11 @@ import lombok.Data;
 @AllArgsConstructor
 public class RegistrationRequest {
     @NotBlank(message = "firstname is required")
-    private String firstname;
+    private String userFirstName;
 
-    private String lastname;
+    private String userLastName;
     @NotBlank(message = "email is required")
-    private String email;
+    private String userName;
     @NotBlank(message = "password is required")
     private String password;
 }
