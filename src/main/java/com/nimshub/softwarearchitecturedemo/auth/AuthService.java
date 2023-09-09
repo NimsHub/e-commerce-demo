@@ -131,4 +131,14 @@ public class AuthService {
                 .accessToken(jwtToken)
                 .build();
     }
+
+    public RegistrationResponse getVerificationCode(VerificationCodeRequest request){
+        var user = userRepository.findByEmail(request.getUserEmail())
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "Incorrect Email or User with E-mail - %s does not exist".formatted(request.getUserEmail())));
+        sendVerificationEmail(user);
+        return RegistrationResponse.builder()
+                .message("Verification Email is Sent to Your Email")
+                .build();
+    }
 }
