@@ -4,7 +4,6 @@ import com.nimshub.softwarearchitecturedemo.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -24,17 +23,6 @@ public class ApplicationConfig {
     public UserDetailsService userDetailsService() {
         return username -> repository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
-
-    @Bean
-    public JavaMailSenderImpl mailSender() {
-        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-
-        javaMailSender.setProtocol("SMTP");
-        javaMailSender.setHost("127.0.0.1");
-        javaMailSender.setPort(25);
-
-        return javaMailSender;
     }
 
     @Bean
