@@ -1,7 +1,7 @@
 package com.nimshub.softwarearchitecturedemo.configuration;
 
 
-import com.nimshub.softwarearchitecturedemo.service.JwtService;
+import com.nimshub.softwarearchitecturedemo.auth.JwtService;
 import com.nimshub.softwarearchitecturedemo.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
