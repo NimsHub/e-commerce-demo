@@ -57,8 +57,8 @@ public class AuthService {
 
     private void sendVerificationEmail(User user) {
         String toAddress = user.getEmail();
-        String fromAddress = "stellerVoyage@gmail.com";
-        String senderName = "0x9";
+        String fromAddress = "ecommercedemo@gmail.com";
+        String senderName = "Ecommerce";
         String subject = "Please verify your registration";
         String content = "Dear [[name]],<br>"
                 + "<br><br>"
@@ -66,7 +66,7 @@ public class AuthService {
                 + "To ensure the security of your account and provide you with a seamless experience,<br>"
                 + "Here is your verification code <b>[[code]]</b>:<br>"
                 + "<br>"
-                + "Thank you for choosing StellarVoyage. We're thrilled to have you on board!<br>"
+                + "Thank you for choosing Our Ecommerce platform. We're thrilled to have you on board!<br>"
                 + "<br><br>"
                 + "Safe travels and best regards,<br>"
                 + "Ecommerce Team<br>";
